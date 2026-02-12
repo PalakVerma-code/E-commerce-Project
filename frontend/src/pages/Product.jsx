@@ -3,10 +3,11 @@ import { useParams } from 'react-router-dom'
 import { ShopContext } from '../context/ShopContext';
 import { useContext,useState } from 'react';
 import { assets } from '../assets/frontend_assets/assets';
+import RelatedProduct from '../components/RelatedProduct';
 
 const Product = () => {
   const {productId} = useParams();
-  const {products,currency} = useContext(ShopContext);
+  const {products,currency,addToCart} = useContext(ShopContext);
   const [productdata, setproductdata] = useState(false);
   const [image, setimage] = useState('')
   const [size, setsize] = useState('');
@@ -59,7 +60,7 @@ const Product = () => {
             (<button onClick={()=>setsize(s)} className={`border py-2 px-4 bg-gray-100 border-none ${s === size ? 'bg-gray-300' : ''}`} key={index}>{s}</button> ))} 
           </div> 
           </div>
-          <button className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700' >Add to Cart</button>
+          <button onClick={()=>addToCart(productdata._id,size)} className='bg-black text-white px-8 py-3 text-sm active:bg-gray-700' >Add to Cart</button>
           <hr className='mt-8 sm:w-4/5'/>
           <div className='text-sm text-gray-500 flex flex-col gap-1'>
             <p>100% Original product.</p>
@@ -80,7 +81,7 @@ const Product = () => {
           <p>This product is made with high-quality materials and excellent craftsmanship. Perfect for everyday wear with great comfort and durability.</p>
           </div>
        </div>
-
+      <RelatedProduct category={productdata.category} subcategory={productdata.subCategory} />
     </div>
   ) : <div className='opacity-0'>Loading...</div>;
 }

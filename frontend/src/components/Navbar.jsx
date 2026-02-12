@@ -2,9 +2,10 @@ import React, { useState,useContext } from 'react'
 import { assets } from '../assets/frontend_assets/assets'
 import {NavLink, Link } from 'react-router-dom'
 import { ShopContext } from '../context/ShopContext';
+import { useEffect } from 'react';
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const{setshowsearch} = useContext(ShopContext);
+  const{setshowsearch,getCartItemsCount} = useContext(ShopContext);
   return (
     <div className='flex items-center justify-between py-5 font-medium'>
      <Link to='/'>
@@ -44,7 +45,7 @@ const Navbar = () => {
           </div>
           <Link to='/cart' className='relative'>
             <img src={assets.cart_icon} className='w-5 min-w-5 cursor-pointer' alt="Cart" />
-            <p className='absolute -right-1.25 -bottom-1.25 w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>0</p>
+            <p className='absolute -right-1.25 -bottom-1.25 w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'> {getCartItemsCount()} </p>
           </Link>
           <img onClick={()=>setIsMenuOpen(true)} src={assets.menu_icon} className='w-5 cursor-pointer sm:hidden' alt="Menu" />
       </div>
