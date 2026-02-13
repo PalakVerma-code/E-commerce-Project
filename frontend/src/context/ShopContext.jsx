@@ -1,6 +1,6 @@
-import { createContext, useEffect } from "react";
+import { createContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { products } from "../assets/frontend_assets/assets";
-import { useState } from "react";
 import { toast } from "react-toastify";
 
  export const ShopContext = createContext();
@@ -9,7 +9,15 @@ import { toast } from "react-toastify";
     const delivery_charge=10;
     const [search, setsearch] = useState('')
     const [showsearch, setshowsearch] = useState(false)
+    const navigate=useNavigate();
     const [cardItems, setcardItems] = useState({});
+    const [orderData, setorderData] = useState({
+        items: [],
+        address: {},
+        orderDate: null,
+        orderId: null,
+        status: 'Processing'
+    });
     const addToCart= async(itemId,size)=>{
         if(!size){
             toast.error("Please select a size");
@@ -74,6 +82,49 @@ import { toast } from "react-toastify";
                     return total;
                  }
 
+    const placeOrder = async(deliveryInfo) => {
+        // Convert cart items to order items format
+        let orderItems = [];
+        for(const itemId in cardItems){
+            for(const size in cardItems[itemId]){
+                if(cardItems[itemId][size] > 0){
+                    const product = products.find(p => p._id === itemId);
+                    if(product){
+                        orderItems.push({
+                            _id: itemId,
+                            name: product.name,
+                            price: product.price,
+                            image: product.image[0],
+                            size: size,
+                            quantity: cardItems[itemId][size],
+                            subtotal: product.price * cardItems[itemId][size]
+                        });
+                    }
+                }
+            }
+        }
+        
+        // Generate order ID and date
+        const orderId = Math.random().toString(36).substr(2, 9).toUpperCase();
+        const orderDate = new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        // Save order data
+        setorderData({
+            items: orderItems,
+            address: deliveryInfo,
+            orderDate: orderDate,
+            orderId: orderId,
+            status: 'Processing'
+        });
+
+        // Clear cart after order is placed
+        setcardItems({});
+    }
+
     const value = {
         products,
         currency,
@@ -87,6 +138,9 @@ import { toast } from "react-toastify";
         getCartItemsCount,
         updateCartItemQuantity,
         getCartTotal,
+        navigate,
+        orderData,
+        placeOrder
     };
     
         return(
